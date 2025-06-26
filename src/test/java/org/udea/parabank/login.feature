@@ -14,7 +14,7 @@ Feature: Login to app contact
     """
     {
     "user": {
-        "_id": '#number',
+        "_id": '#string',
         "firstName": '#string',
         "lastName": '#string',
         "email": '#string',
