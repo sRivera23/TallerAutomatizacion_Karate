@@ -10,6 +10,7 @@ Feature: create contact to app contact
     And request {"email": "pruebasudea@test.com","password": "12345678"}
     When method POST
     * def authToken = response.token
+    * print 'OBTENGO EL TOKEN:', authToken
     
    Scenario: Customer Create contact 
     Given path '/contacts'
