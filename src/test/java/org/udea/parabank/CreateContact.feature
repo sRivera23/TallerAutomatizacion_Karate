@@ -49,7 +49,7 @@ Feature: create contact to app contact
     When method POST
     Then status 201
 
-    # Validar que aparece en la lista
+    # Verificar que aparece en /contacts
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
     When method GET
@@ -57,6 +57,7 @@ Feature: create contact to app contact
     And match response[*].email contains emailValue
 
   Scenario: No debe permitir contacto sin firstName
+    # Login
     Given path '/users/login'
     And request
     """
@@ -66,6 +67,7 @@ Feature: create contact to app contact
     Then status 200
     * def authToken = response.token
 
+    # Crear contacto sin firstName
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
     And request
@@ -78,7 +80,7 @@ Feature: create contact to app contact
     """
     When method POST
     Then status 400
-    And match response.error contains "firstName"
+    And match response.errors.firstName != null
 
   Scenario: No debe permitir contactos con email duplicado
     # Login
@@ -90,7 +92,6 @@ Feature: create contact to app contact
     When method POST
     Then status 200
     * def authToken = response.token
-
     * def reusedEmail = 'duplicado@mail.com'
 
     # Primer contacto
@@ -100,6 +101,7 @@ Feature: create contact to app contact
     """
     {
       "firstName": "Original",
+      "lastName": "Original",
       "email": "#(reusedEmail)"
     }
     """
@@ -113,9 +115,11 @@ Feature: create contact to app contact
     """
     {
       "firstName": "Duplicado",
+      "lastName": "Duplicado",
       "email": "#(reusedEmail)"
     }
     """
     When method POST
-    Then status 409
-    And match response.error contains "email"
+    Then status 400
+    And match response.message contains "duplicate"
+
