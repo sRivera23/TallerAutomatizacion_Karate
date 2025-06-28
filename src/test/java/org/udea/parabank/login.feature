@@ -23,3 +23,9 @@ Feature: Login to app contact
     "token": '#string',
     }
     """
+  Scenario: Login fallido con credenciales inválidas
+  Given path '/users/login'
+  And request { "email": "usuario-invalido@test.com", "password": "password-incorrecto" }
+  When method POST
+  Then status 401
+  And match response == { error: '#string' }
