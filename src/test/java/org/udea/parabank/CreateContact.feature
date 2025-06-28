@@ -1,13 +1,16 @@
 @appcontact_createcontact
 Feature: create contact to app contact
 
- Background:
+  Background:
     * url baseUrl
     * header Accept = 'application/json'
 
   Scenario: Login exitoso
     Given path '/users/login'
-    And request { "email": "karateP@gmail.com", "password": "Karate123" }
+    And request
+    """
+    { "email": "karateP@gmail.com", "password": "Karate123" }
+    """
     When method POST
     Then status 200
     * def authToken = response.token
@@ -15,7 +18,10 @@ Feature: create contact to app contact
   Scenario: Crear contacto exitoso y verificarlo vía API
     # Login
     Given path '/users/login'
-    And request { "email": "karateP@gmail.com", "password": "Karate123" }
+    And request
+    """
+    { "email": "karateP@gmail.com", "password": "Karate123" }
+    """
     When method POST
     Then status 200
     * def authToken = response.token
@@ -24,11 +30,13 @@ Feature: create contact to app contact
     * def emailValue = 'prueba.' + java.util.UUID.randomUUID() + '@mail.com'
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
-    And request {
+    And request
+    """
+    {
       "firstName": "Prueba",
       "lastName": "UDEA",
       "birthdate": "1970-01-01",
-      "email": emailValue,
+      "email": "#(emailValue)",
       "phone": "8005555555",
       "street1": "1 Main St.",
       "street2": "Apartment A",
@@ -37,6 +45,7 @@ Feature: create contact to app contact
       "postalCode": "12345",
       "country": "USA"
     }
+    """
     When method POST
     Then status 201
 
@@ -49,18 +58,24 @@ Feature: create contact to app contact
 
   Scenario: No debe permitir contacto sin firstName
     Given path '/users/login'
-    And request { "email": "karateP@gmail.com", "password": "Karate123" }
+    And request
+    """
+    { "email": "karateP@gmail.com", "password": "Karate123" }
+    """
     When method POST
     Then status 200
     * def authToken = response.token
 
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
-    And request {
+    And request
+    """
+    {
       "lastName": "SinNombre",
       "email": "contacto.sin.nombre@mail.com",
       "phone": "8001112233"
     }
+    """
     When method POST
     Then status 400
     And match response.error contains "firstName"
@@ -68,7 +83,10 @@ Feature: create contact to app contact
   Scenario: No debe permitir contactos con email duplicado
     # Login
     Given path '/users/login'
-    And request { "email": "karateP@gmail.com", "password": "Karate123" }
+    And request
+    """
+    { "email": "karateP@gmail.com", "password": "Karate123" }
+    """
     When method POST
     Then status 200
     * def authToken = response.token
@@ -78,20 +96,26 @@ Feature: create contact to app contact
     # Primer contacto
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
-    And request {
+    And request
+    """
+    {
       "firstName": "Original",
-      "email": reusedEmail
+      "email": "#(reusedEmail)"
     }
+    """
     When method POST
     Then status 201
 
     # Intentar crear otro con el mismo email
     Given path '/contacts'
     And header Authorization = 'Bearer ' + authToken
-    And request {
+    And request
+    """
+    {
       "firstName": "Duplicado",
-      "email": reusedEmail
+      "email": "#(reusedEmail)"
     }
+    """
     When method POST
     Then status 409
     And match response.error contains "email"
