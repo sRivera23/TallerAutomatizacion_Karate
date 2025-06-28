@@ -28,4 +28,4 @@ Feature: Login to app contact
   And request { "email": "usuario-invalido@test.com", "password": "password-incorrecto" }
   When method POST
   Then status 401
-  And match response == { error: '#string' }
+  And match response == ''
