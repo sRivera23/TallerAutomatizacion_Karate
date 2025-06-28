@@ -1,7 +1,7 @@
 function fn() {
     karate.configure('connectTimeout', 5000);
     karate.configure('readTimeout', 5000);
-    // karate.configure('abortSuiteOnFailure', true);
+    // karate.configure('abortSuiteOnFailure', true); d
 
     var protocol = 'http';
     var server = '192.168.0.182:8080';
